@@ -3,23 +3,27 @@
 [![GitHub release](https://img.shields.io/github/release/johnstonskj/dali.svg?style=flat-square)](https://github.com/johnstonskj/dali/releases)
 [![Travis Status](https://travis-ci.org//.svg)](https://www.travis-ci.org//)
 [![Coverage Status](https://coveralls.io/repos/github///badge.svg?branch=master)](https://coveralls.io/github//?branch=master)
-[![raco pkg install dali](https://img.shields.io/badge/raco%20pkg%20install-rml--core-blue.svg)](http://pkgs.racket-lang.org/package/dali)
-[![Documentation](https://img.shields.io/badge/raco%20docs-rml--core-blue.svg)](http://docs.racket-lang.org/dali/index.html)
+[![raco pkg install dali](https://img.shields.io/badge/raco%20pkg%20install-dali-blue.svg)](http://pkgs.racket-lang.org/package/dali)
+[![Documentation](https://img.shields.io/badge/raco%20docs-dali-blue.svg)](http://docs.racket-lang.org/dali/index.html)
 [![GitHub stars](https://img.shields.io/github/stars/johnstonskj/dali.svg)](https://github.com/johnstonskj/dali/stargazers)
 ![MIT License](https://img.shields.io/badge/license-MIT-118811.svg)
 
-
+Dali implements a subset of the languages defined by
+[Moustache](https://mustache.github.io/) and [Handlebars(https://handlebarsjs.com/).
 
 ## Modules
 
-* `` - TBD.
+e `dali` - template engine module.
 
 ## Example
 
 ```scheme
-(require )
-
-;; add example here
+(require dali)
+(define template "a list: {{#items}} {{item}}, {{/items}}and that's all")
+(define context (hash "items" (list (hash "item" "one")
+                                    (hash "item" "two")
+                                    (hash "item" "three"))))
+(expand-string template context)
 ```
 
 
