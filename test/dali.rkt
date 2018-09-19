@@ -145,12 +145,12 @@
 
 (test-case
  "load-partial: cannot find file, incorrect name"
- (partial-path (path->string (collection-file-path "test" "scaffold")))
+ (partial-path (path->string (collection-file-path "test" "dali")))
  (check-false (load-partial "unknown")))
 
 (test-case
  "load-partial: cannot find file, incorrect path"
- (partial-path (path->string (collection-file-path "unknown" "scaffold")))
+ (partial-path (path->string (collection-file-path "unknown" "dali")))
  (check-false (load-partial "salutation")))
 
 ;; ---------- Test Cases - Errors
