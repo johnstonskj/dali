@@ -13,7 +13,7 @@ Dali implements a subset of the languages defined by
 
 ## Modules
 
-e `dali` - template engine module.
+* `dali` - template engine module.
 
 ## Example
 

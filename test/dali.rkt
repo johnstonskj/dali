@@ -113,7 +113,7 @@
 
 (test-case
  "expand-string: success with partial"
- (partial-path (path->string (collection-file-path "test" "scaffold")))
+ (partial-path (path->string (collection-file-path "test" "dali")))
  (check-equal?
   (expand-string "{{>salutation}}    Welcome!"
                  (hash "salutation" (hash "text" "Hola"
