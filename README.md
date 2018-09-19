@@ -1,8 +1,8 @@
 ![Dali Template Engine](https://raw.githubusercontent.com/johnstonskj/dali/master/scribblings/dali-logo-master.png)
 
 [![GitHub release](https://img.shields.io/github/release/johnstonskj/dali.svg?style=flat-square)](https://github.com/johnstonskj/dali/releases)
-[![Travis Status](https://travis-ci.org//.svg)](https://www.travis-ci.org//)
-[![Coverage Status](https://coveralls.io/repos/github///badge.svg?branch=master)](https://coveralls.io/github//?branch=master)
+[![Travis Status](https://travis-ci.org/johnstonskj/dali.svg)](https://www.travis-ci.org/johnstonskj/dali)
+[![Coverage Status](https://coveralls.io/repos/github/johnstonskj/dali/badge.svg?branch=master)](https://coveralls.io/github/johnstonskj/dali?branch=master)
 [![raco pkg install dali](https://img.shields.io/badge/raco%20pkg%20install-dali-blue.svg)](http://pkgs.racket-lang.org/package/dali)
 [![Documentation](https://img.shields.io/badge/raco%20docs-dali-blue.svg)](http://docs.racket-lang.org/dali/index.html)
 [![GitHub stars](https://img.shields.io/github/stars/johnstonskj/dali.svg)](https://github.com/johnstonskj/dali/stargazers)
