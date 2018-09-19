@@ -1,4 +1,4 @@
-# Racket package dali
+![Dali Template Engine](https://raw.githubusercontent.com/johnstonskj/dali/master/scribblings/dali-logo-master.png)
 
 [![GitHub release](https://img.shields.io/github/release/johnstonskj/dali.svg?style=flat-square)](https://github.com/johnstonskj/dali/releases)
 [![Travis Status](https://travis-ci.org//.svg)](https://www.travis-ci.org//)
@@ -9,7 +9,7 @@
 ![MIT License](https://img.shields.io/badge/license-MIT-118811.svg)
 
 Dali implements a subset of the languages defined by
-[Moustache](https://mustache.github.io/) and [Handlebars(https://handlebarsjs.com/).
+[Moustache](https://mustache.github.io/) and [Handlebars](https://handlebarsjs.com/).
 
 ## Modules
 
