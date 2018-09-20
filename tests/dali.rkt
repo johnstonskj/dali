@@ -73,8 +73,22 @@
                                (hash "item" "two")
                                (hash "item" "three"))))
  (check-equal?
-  (expand-string "a list: {{#items}} {{item}}, {{/items}}and that's all" c)
-  "a list:  one,  two,  three, and that's all"))
+  (expand-string "a list: {{#items}}{{item}}, {{/items}}and that's all" c)
+  "a list: one, two, three, and that's all"))
+
+(test-case
+ "expand-string: success with # conditional list of symbols"
+ (check-equal?
+  (expand-string "a list: {{#items}}{{_}}, {{/items}}and that's all"
+                 (hash "items" '(a b c)))
+  "a list: a, b, c, and that's all"))
+
+(test-case
+ "expand-string: success with # conditional list of numbers"
+ (check-equal?
+  (expand-string "a list: {{#items}}{{_}}, {{/items}}and that's all"
+                 (hash "items" '(1 3 9)))
+  "a list: 1, 3, 9, and that's all"))
 
 (test-case
  "expand-string: success with # conditional hash with hash"
@@ -83,18 +97,25 @@
                  (hash "item" (hash "name" "simon")))
   "a hash: simon and that's all"))
 
-;(test-case
-; "expand-string: success with # conditional hash only"
-; (check-equal?
-;  (expand-string "a hash: {{#item}}{{name}}{{/item}} and that's all"
-;                 (hash "item" "yes" "name" "simon"))
-;  "a hash: simon and that's all"))
+(test-case
+ "expand-string: success with # conditional hash only"
+ (check-equal?
+  (expand-string "a hash: {{#item}}{{name}}{{/item}} and that's all"
+                 (hash "item" "yes" "name" "simon"))
+  "a hash: simon and that's all"))
 
 (test-case
  "expand-string: success with # conditional hash only, no pattern"
  (check-equal?
   (expand-string "a hash: {{#item}}OK then{{/item}} and that's all"
                  (hash "item" "yes"))
+  "a hash: OK then and that's all"))
+
+(test-case
+ "expand-string: success with # boolean conditional hash only, no pattern"
+ (check-equal?
+  (expand-string "a hash: {{#item}}OK then{{/item}} and that's all"
+                 (hash "item" #t))
   "a hash: OK then and that's all"))
 
 (test-case
@@ -169,14 +190,6 @@
    exn:fail?
    (λ ()
      (expand-string "hello {{/unsupported}} :)" (hash "name" "simon")))))
-
-(test-case
- "expand-string: failure with # conditional list of symbols"
- (check-exn
-   exn:fail?
-   (λ ()
-     (expand-string "a list: {{#items}} {{_}}, {{/items}}and that's all"
-                    (hash "items" '(a b c))))))
 
 ;; ---------- Test Cases - Unsupported
 
