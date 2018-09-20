@@ -214,13 +214,18 @@
                                      (cond
                                        [(list? new-context)
                                         ;; process each item in the list
-                                        (for ([context new-context])
+                                        (for ([item-context new-context])
+                                          ;; this looks like the enclosing cond, minus the list?
                                           (cond
-                                            [(hash? context)    
-                                             (nested context)]
-                                            [(string? new-context)
-                                             (nested (hash ,value context "_" context))]
-                                            [else (error "invalid context type")]))]
+                                            [(hash? item-context)
+                                             (nested item-context)]
+                                            [(or (symbol? item-context)
+                                                 (char? item-context)
+                                                 (string? item-context)
+                                                 (boolean? item-context)
+                                                 (number? item-context))
+                                             (nested (hash-set context "_" (~a item-context)))]
+                                            [else (error "invalid context type ~s" item-context)]))]
                                        [(hash? new-context)
                                         ;; process once for the hash
                                         (nested new-context)]

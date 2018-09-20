@@ -28,6 +28,7 @@ env:
 
 matrix:
   allow_failures:
+    - env: RACKET_VERSION=6.10
     - env: RACKET_VERSION=HEAD
   fast_finish: true
 
