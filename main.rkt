@@ -55,7 +55,7 @@
 
 (define partial-cache (make-parameter (hash)))
 
-(define partial-extension (make-parameter ".moustache"))
+(define partial-extension (make-parameter ".mustache"))
 
 (define escape-replacements
   (make-parameter '(("&" . "&amp;")
@@ -224,12 +224,14 @@
                                        [(hash? new-context)
                                         ;; process once for the hash
                                         (nested new-context)]
-                                       [(or (string? new-context)
+                                       [(or (symbol? new-context)
+                                            (char? new-context)
+                                            (string? new-context)
                                             (boolean? new-context)
                                             (number? new-context))
                                         ;; process once with this value, note we don't change the
                                         ;; context but we add a new key "_" for the current value.
-                                        (nested (hash-set context "_" new-context))]
+                                        (nested (hash-set context "_" (~a new-context)))]
                                        [else
                                         (error (format "invalid context type: ~s" new-context))]))))
                               compiled))
