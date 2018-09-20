@@ -1,6 +1,6 @@
 PACKAGENAME=dali
 COLLECTS=dali
-TESTS=test
+TESTS=tests
 SCRBL=scribblings/$(PACKAGENAME).scrbl
 
 all: setup test

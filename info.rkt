@@ -10,7 +10,8 @@
 (define version "1.0")
 (define pkg-authors '(Simon Johnston))
 
-(define scribblings '(("scribblings/scribblings.scrbl" ())))
+(define scribblings '(("scribblings/dali.scrbl" ())))
+(define test-omit-paths '("scribblings"))
 
 (define deps '(
   "base"

@@ -113,7 +113,7 @@
 
 (test-case
  "expand-string: success with partial"
- (partial-path (path->string (collection-file-path "test" "dali")))
+ (partial-path (path->string (collection-file-path "tests" "dali")))
  (check-equal?
   (expand-string "{{>salutation}}    Welcome!"
                  (hash "salutation" (hash "text" "Hola"
@@ -145,7 +145,7 @@
 
 (test-case
  "load-partial: cannot find file, incorrect name"
- (partial-path (path->string (collection-file-path "test" "dali")))
+ (partial-path (path->string (collection-file-path "tests" "dali")))
  (check-false (load-partial "unknown")))
 
 (test-case
