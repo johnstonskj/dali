@@ -2,7 +2,7 @@
 
 @(require racket/sandbox
           scribble/core
-          scribble/eval
+          scribble/examples
           dali
           (for-label racket/base
                      racket/contract
@@ -93,15 +93,20 @@ HTML-escape their content.
       "company" "<b>GitHub</b>")
 ]
 
+
 @bold{Output:}
 
-@verbatim|{
-* Chris
-*
-* &lt;b&gt;GitHub&lt;/b&gt;
-* <b>GitHub</b>
-* <b>GitHub</b>
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "* {{name}}\n* {{age}}\n* {{company}}\n* {{{company}}}\n* {{&company}}"
+            (hash "name" "Chris"
+                  "company" "<b>GitHub</b>"))
+           "\n"))
+]
 
 @subsubsection[#:tag "value:lambda"]{Lambdas}
 
@@ -109,10 +114,12 @@ Any value may be a be a lambda, specifically a lambda that takes a single
 argument which will be the key used to select it. The lambda returns a
 string value that will be used as the replacement value.
 
-@racketblock[
+@examples[
+#:eval example-eval
 (require racket/date)
-(expand-string template (hash "name" "Chris"
-                              "date" (λ (k) (date->string (current-date)))))
+(expand-string "Hi {{name}}, today is {{date}}."
+               (hash "name" "Chris"
+                     "date" (λ (k) (date->string (current-date)))))
 ]
 
 The corresponding contract for the lambda is therefore:
@@ -152,9 +159,16 @@ Shown.
 
 @bold{Output:}
 
-@verbatim|{
-Shown.
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "Shown.\n{{#person}}\n  Never shown!\n{{/person}}"
+            (hash "person" #f))
+           "\n"))
+]
 
 @subsubsection{Non-Empty Lists}
 
@@ -180,11 +194,18 @@ the context for each render will be reset to be the list item.
 
 @bold{Output:}
 
-@verbatim|{
-<b>resque</b>
-<b>hub</b>
-<b>rip</b>
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#repo}}\n  <b>{{name}}</b>\n{{/repo}}"
+            (hash "repo" (list (hash "name" "resque")
+                               (hash "name" "hub")
+                               (hash "name" "rip"))))
+           "\n"))
+]
 
 If, however, the list contains single valued items the context is not reset but
 a temporary key @tt{"_"} is added to the context with the value of the list item 
@@ -206,11 +227,16 @@ a temporary key @tt{"_"} is added to the context with the value of the list item
 
 @bold{Output:}
 
-@verbatim|{
-<b>resque</b>
-<b>hub</b>
-<b>rip</b>
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#repo}}\n  <b>{{_}}</b>\n{{/repo}}"
+            (hash "repo" (list  "resque" "hub" "rip")))
+           "\n"))
+]
 
 @subsubsection[#:tag "section:lambda"]{Lambdas}
 
@@ -238,7 +264,7 @@ This is currently unsupported/untested.
                   (format "<b>~a</b>" (render))))
 ]
 
-@bold{Output:}
+@bold{Expected Output:}
 
 @verbatim|{
 <b>Willy is awesome.</b>
@@ -265,9 +291,16 @@ and will be used as the context for rendering the section.
 
 @bold{Output:}
 
-@verbatim|{
-Hi Jon!
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#person?}}\n  Hi {{name}}!\n{{/person?}}"
+            (hash "person?" (hash "name" "Jon")))
+           "\n"))
+]
 
 @subsection{Inverted Sections}
 
@@ -294,9 +327,16 @@ does not exist, is a false value, the empty list or an empty hash.
 
 @bold{Output:}
 
-@verbatim|{
-No repos :(
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#repo}}\n  <b>{{name}}</b>\n{{/repo}}\n{{^repo}}\n  No repos :(\n{{/repo}}"
+            (hash "repos" '()))
+           "\n"))
+]
 
 @;{============================================================================}
 @subsection{Paths}
@@ -320,9 +360,16 @@ it will be treated as a missing value. Therefore the following template:
 
 @bold{Output:}
 
-@verbatim|{
-Hello Chris.
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#name}}Hello {{person.name}}.{{/name}}"
+            (hash "person" (hash "name" "Chris")))
+           "\n"))
+]
 
 @subsubsection{Parent Paths}
 
@@ -330,6 +377,8 @@ Handlebars also supports references to the parent context via the use of
 relative path specifiers (@tt{../}). For example, in the following template
 the @tt{#person}} section will change the context within the section to the
 nested hash value but the salutation key exists in the parent context.
+
+This is currently unsupported/untested.
 
 @bold{Template:}
 
@@ -344,7 +393,7 @@ nested hash value but the salutation key exists in the parent context.
       "person" (hash "name" "Chris"))
 ]
 
-@bold{Output:}
+@bold{Expected Output:}
 
 @verbatim|{
 Hello Chris.
@@ -369,18 +418,33 @@ as a guard around a single value, for example:
 
 @bold{Output:}
 
-@verbatim|{
-Hello Chris.
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#name}}Hello {{name}}.{{/name}}"
+            (hash "name" "Chris"))
+           "\n"))
+]
 
 While this is a perfectly reasonable approach, sometimes it feels verbose to
 re-type the name tag three times. Dali supports a shortcut for reference inside
 a section to the value of the section, the underscore character. Therefore, the
 following template is equivalent to the example above.
 
-@verbatim|{
-{{#name}}Hello {{_}}.{{/name}}
-}|
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "{{#name}}Hello {{_}}.{{/name}}"
+            (hash "name" "Chris"))
+           "\n"))
+]
+
 
 @;{============================================================================}
 @subsection{Comments}
@@ -395,6 +459,17 @@ Variables with a @tt{!} prefix character are treated as comments and ignored.
 }|
 
 @bold{Output:}
+
+@examples[
+#:eval example-eval
+#:label #f
+(for-each displayln
+          (string-split
+           (expand-string
+            "<h1>Today{{! ignore me }}.</h1>"
+            (hash))
+           "\n"))
+]
 
 @verbatim|{
 <h1>Today.</h1>}|
