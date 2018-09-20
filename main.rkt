@@ -171,16 +171,16 @@
                [(string-between? value "{" "}")
                 ;; html escape response
                 (set! compiled
-                      (cons `(display (escape-string (ref context
-                                                          ,(substring-between value 1)
-                                                          missing-value-handler)) out)
+                      (cons `(display (ref context
+                                           ,(substring-between value 1)
+                                           missing-value-handler) out)
                             compiled))]
                [(equal? prefix "&")
                 ;; html escape response
                 (set! compiled
-                      (cons `(display (escape-string (ref context
-                                                          ,value
-                                                          missing-value-handler)) out)
+                      (cons `(display (ref context
+                                           ,value
+                                           missing-value-handler) out)
                             compiled))]
                [(string-in? prefix '("#" "^"))
                 ;; start a conditional block
@@ -266,9 +266,9 @@
                [else
                 ;; just a simple value reference
                 (set! compiled
-                      (cons `(display (ref context
-                                           ,value
-                                           missing-value-handler) out)
+                      (cons `(display (escape-string (ref context
+                                                          ,value
+                                                          missing-value-handler)) out)
                             compiled))]))]
           [else (log-debug "skipping over ~a" (substring str last (t-end (first pos-list))))])
         (if (empty? more)

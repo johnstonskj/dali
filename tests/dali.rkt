@@ -38,16 +38,22 @@
    "hello steve :)"))
   
 (test-case
- "expand-string: success with html escape &"
+ "expand-string: success with html unescape &"
+  (check-equal?
+   (expand-string "hello {{name}} :)" (hash "name" "<simon>"))
+   "hello &lt;simon&gt; :)")
   (check-equal?
    (expand-string "hello {{& name}} :)" (hash "name" "<simon>"))
-   "hello &lt;simon&gt; :)"))
+   "hello <simon> :)"))
   
 (test-case
- "expand-string: success with html escape {}"
+ "expand-string: success with html unescape {}"
+  (check-equal?
+   (expand-string "hello {{name}} :)" (hash "name" "<simon>"))
+   "hello &lt;simon&gt; :)")
   (check-equal?
    (expand-string "hello {{{name}}} :)" (hash "name" "<simon>"))
-   "hello &lt;simon&gt; :)"))
+   "hello <simon> :)"))
   
 (test-case
  "expand-string: success with nested"
