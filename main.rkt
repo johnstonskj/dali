@@ -27,6 +27,9 @@
    (-> string? boolean?)]
   
   [blank-missing-value-handler
+   (-> string? string?)]
+    
+  [error-missing-value-handler
    (-> string? string?)])
 
  partial-path
@@ -67,6 +70,10 @@
 ;; ---------- Implementation
 
 (define (blank-missing-value-handler name) "")
+
+
+(define (error-missing-value-handler name)
+  (error "No context key ~a found" name))
 
 
 (define (expand-file source target context [missing-value-handler blank-missing-value-handler])
@@ -194,52 +201,18 @@
                   (when (equal? end #f)
                     (error (format "no end tag for block ~a" value)))
                   (define sub-matches (take more (index-of more (first end))))
-                  (define not-thing '(missing-or-empty tag-content))
                   (define sub-lambda `(λ (context) ,(compile-matches str
                                                                  (t-end (first pos-list))
                                                                  (t-start (first (first end)))
                                                                  sub-matches
                                                                  missing-value-handler)))
-                  ;; TODO: refactor this into a reusable function for compiler?
-                  (set! compiled
-                        (cons `(let ([tag-content (ref context
-                                                       ,value
-                                                       blank-missing-value-handler)])
-                                 (when ,(cond
-                                          [(equal? prefix "#") 'tag-content]
-                                          [(equal? prefix "^") not-thing])
-                                   (let ([new-context (ref context
-                                                           ,value
-                                                           blank-missing-value-handler)]
-                                         [nested ,sub-lambda])
-                                     (cond
-                                       [(list? new-context)
-                                        ;; process each item in the list
-                                        (for ([item-context new-context])
-                                          (cond
-                                            [(hash? item-context)
-                                             (nested item-context)]
-                                            [(or (symbol? item-context)
-                                                 (char? item-context)
-                                                 (string? item-context)
-                                                 (boolean? item-context)
-                                                 (number? item-context))
-                                             (nested (hash-set context "_" (~a item-context)))]
-                                            [else (error "invalid context type ~s" item-context)]))]
-                                       [(hash? new-context)
-                                        ;; process once for the hash
-                                        (nested new-context)]
-                                       [(or (symbol? new-context)
-                                            (char? new-context)
-                                            (string? new-context)
-                                            (boolean? new-context)
-                                            (number? new-context))
-                                        ;; process once with this value, note we don't change the
-                                        ;; context but we add a new key "_" for the current value.
-                                        (nested (hash-set context "_" (~a new-context)))]
-                                       [else
-                                        (error (format "invalid context type: ~s" new-context))]))))
-                              compiled))
+                  (set! compiled (cons `(expand-section context
+                                                        ,value
+                                                        ,prefix
+                                                        ,sub-lambda
+                                                        out
+                                                        missing-value-handler)
+                                       compiled))
                   (set! skip-to end))
                 (log-debug "handled start section")]
                [(equal? prefix "/")
@@ -279,6 +252,51 @@
             ;; process next match
             (next-match (t-end (first pos-list)) (first more) (rest more) skip-to))))
   (reverse compiled))
+
+
+(define (expand-section context key prefix nested out missing-value-handler)
+  (let ([tag-content (ref context
+                          key
+                          blank-missing-value-handler)])
+    (when (cond
+             [(equal? prefix "#") tag-content]
+             [(equal? prefix "^") (missing-or-empty tag-content)])
+      (let ([new-context (ref context
+                              key
+                              blank-missing-value-handler)])
+        (cond
+          [(list? new-context)
+           ;; process each item in the list
+           (for ([item-context new-context])
+             (cond
+               [(hash? item-context)
+                (nested item-context)]
+               [(and (procedure? item-context)
+                     (= (procedure-arity item-context) 1))
+                (item-context key)]
+               [(or (symbol? item-context)
+                    (char? item-context)
+                    (string? item-context)
+                    (boolean? item-context)
+                    (number? item-context))
+                (nested (hash-set context "_" (~a item-context)))]
+               [else (error "invalid context type ~s" item-context)]))]
+          [(hash? new-context)
+           ;; process once for the hash
+           (nested new-context)]
+          [(and (procedure? new-context)
+                (= (procedure-arity new-context) 1))
+           (new-context key)]
+          [(or (symbol? new-context)
+               (char? new-context)
+               (string? new-context)
+               (boolean? new-context)
+               (number? new-context))
+           ;; process once with this value, note we don't change the
+           ;; context but we add a new key "_" for the current value.
+           (nested (hash-set context "_" (~a new-context)))]
+          [else
+           (error (format "invalid context type: ~s" new-context))])))))
 
 
 (define (t-start pair) (car pair))

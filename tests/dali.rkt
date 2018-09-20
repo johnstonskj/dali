@@ -74,6 +74,18 @@
    "hello oops :)"))
 
 (test-case
+ "expand-string: success with # conditional and underscore"
+ (check-equal?
+  (expand-string "{{#name}}Hello {{name}}{{/name}}."
+                 (hash "name" "simon"))
+  "Hello simon.")
+ (check-equal?
+  (expand-string "{{#name}}Hello {{_}}{{/name}}."
+                 (hash "name" "simon"))
+  "Hello simon."))
+
+
+(test-case
  "expand-string: success with # conditional, list of hashes"
  (define c (hash "items" (list (hash "item" "one")
                                (hash "item" "two")
