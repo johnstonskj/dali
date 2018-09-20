@@ -224,9 +224,12 @@
                                        [(hash? new-context)
                                         ;; process once for the hash
                                         (nested new-context)]
-                                       [(or (string? new-context) (boolean? new-context) (number? new-context))
-                                        ;; process once with this string
-                                        (nested (hash ,value new-context "_" new-context))]
+                                       [(or (string? new-context)
+                                            (boolean? new-context)
+                                            (number? new-context))
+                                        ;; process once with this value, note we don't change the
+                                        ;; context but we add a new key "_" for the current value.
+                                        (nested (hash-set context "_" new-context))]
                                        [else
                                         (error (format "invalid context type: ~s" new-context))]))))
                               compiled))
