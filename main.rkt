@@ -215,7 +215,6 @@
                                        [(list? new-context)
                                         ;; process each item in the list
                                         (for ([item-context new-context])
-                                          ;; this looks like the enclosing cond, minus the list?
                                           (cond
                                             [(hash? item-context)
                                              (nested item-context)]
