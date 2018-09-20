@@ -8,14 +8,15 @@
 [![GitHub stars](https://img.shields.io/github/stars/johnstonskj/dali.svg)](https://github.com/johnstonskj/dali/stargazers)
 ![MIT License](https://img.shields.io/badge/license-MIT-118811.svg)
 
-Dali implements a subset of the languages defined by
-[Moustache](https://mustache.github.io/) and [Handlebars](https://handlebarsjs.com/).
+Dali is a [Racket](https://racket-lang.org/) implementation of a language similar to [Mustache](https://mustache.github.io/) and [Handlebars](https://handlebarsjs.com/). It tries to be as faithful as possible to Mustache, providing a simple and high-level idiomatic module for callers. Not all features of Handlebars are implemented, or implemented in the same manner, as they are more JavaScript focused.
 
 ## Modules
 
-* `dali` - template engine module.
+* `dali` - template engine module, provides `compile-string`, `expand-string`, and `expand-file` functions for template expansion. The *expand* functions rely on the *compile* function to read the template and convert it into a Racket function for performance and re-use.
 
 ## Example
+
+The following example expands a very simple template with a nested list. Note that the context provided to the expansion function is simply comprised of `hash?` and `list?` structures.
 
 ```scheme
 (require dali)
@@ -26,6 +27,7 @@ Dali implements a subset of the languages defined by
 (expand-string template context)
 ```
 
+The module also provides a cache for loaded and compiled *partial* to support greater performance.
 
 ## Installation
 

@@ -25,6 +25,10 @@ test:
 coverage:
 	raco cover -b -f coveralls -p $(PACKAGENAME)
 
+readme: README.md
+	markdown -r markdown_github -w html5 -o ./doc/readme.html \
+		--standalone --self-contained README.md
+
 htmldocs: $(SCRBL)
 	raco scribble \
 		--html \
