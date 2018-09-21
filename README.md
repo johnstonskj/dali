@@ -38,6 +38,13 @@ The module also provides a cache for loaded and compiled *partial* to support gr
 
 ## History
 
+* *1.1* - Feature Stable Release
+  * Completed documentation, using Mustache flow and examples.
+  * Refactored the compiled code for sections, it's now much faster and cleaner.
+  * Updated escaping to match the Mustache spec.
+  * Support more simple value options, numbers, symbols, booleans, and characters.
+  * Added `error-missing-value-handler`.
+
 * **1.0** - Initial Version
 
 [![Racket Language](https://raw.githubusercontent.com/johnstonskj/racket-scaffold/master/scaffold/plank-files/racket-lang.png)](https://racket-lang.org/)
