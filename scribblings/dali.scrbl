@@ -110,9 +110,10 @@ HTML-escape their content.
 
 @subsubsection[#:tag "value:lambda"]{Lambdas}
 
-Any value may be a be a lambda, specifically a lambda that takes a single
-argument which will be the key used to select it. The lambda returns a
-string value that will be used as the replacement value.
+Any value may be a be a lambda, specifically a lambda that takes one argument
+that holds the key used to select it, and a second optional argument that holds
+the current context hash. The lambda returns a string value that will be used
+as the replacement value.
 
 @examples[
 #:eval example-eval
@@ -125,7 +126,7 @@ string value that will be used as the replacement value.
 The corresponding contract for the lambda is therefore:
 
 @racketblock[
-[value-lambda (-> string? string?)]
+[value-lambda (->* (string?) (hash?) string?)]
 ]
 
 @;{============================================================================}
@@ -520,9 +521,27 @@ Will be combined as if it were a single expanded template:
 Currently Unsupported.
 
 @;{============================================================================}
-@subsection{Helpers and Literals}
+@subsection{Helpers}
 
-Currently unsupported (from Handlebars).
+Handlebars supports a separate JavaScript function, @tt{Handlebars.registerHelper},
+to name a function that can then be used as a section name.
+
+This is provided in part by value @secref["value:lambda"].
+
+@;{============================================================================}
+@subsection{Literals}
+
+Handlebars supports the addition of literal values as a sequence of
+@tt{key=value} pairs to add to the current context for a section.
+
+This is currently unsupported.
+
+@bold{Example Handlebars Template:}
+
+@verbatim|{
+{{agree_button "My Text" class="my-class" visible=true counter=4}}
+}|
+
 
 @;{============================================================================}
 @;{============================================================================}
@@ -566,6 +585,20 @@ incorporated into the final compiled form).
 
 @defthing[partial-extension string?]{
 The file extension for partial files, by default this is @tt{.mustache}.
+}
+
+@defthing[escape-replacements (listof pair?)]{
+This parameter affects the escaping performed during variable expansion. By default
+this is a common set of HTML entity replacements. However, if you wish to extend
+the HTML set or replace entirely for your own language or purpose, override this
+parameter. The actual value is a list of pairs where the first is a string to replace
+with the second.
+
+@examples[
+#:eval example-eval
+#:label #f
+(escape-replacements)
+]
 }
 
 @;{============================================================================}
@@ -619,9 +652,11 @@ following form.
 This function may raise @racket[exn:fail] for the following conditions.
 
 @itemlist[
-  @item{Invalid context structure}
-  @item{Partial file does not exist}
-  @item{Unsupported feature}
+  @item{Invalid context structure, for example a value which is not
+    a list, hash, string, boolean, symbol, or number.}
+  @item{A partial file could not be loaded (does not exist).}
+  @item{An unsupported feature (section @secref["section:lambda"],
+    @secref["Set_Delimiter"] @secref["Literals"], or @secref["Parent_Paths"]).}
 ]
 @defproc[(load-partial
           [name string?])
@@ -633,12 +668,14 @@ add it to @racket[partial-cache]. Returns @racket[#t] if this is successful, or
 }
 
 @defproc[(blank-missing-value-handler
-          [name string?])
+          [name string?]
+          [context hash? (hash)])
          string?]{
 This is the default @racket[missing-value-handler] function, it simply returns a
 blank string (@racket[""]) for any missing context key.}
 
 @defproc[(error-missing-value-handler
-          [name string?])
+          [name string?]
+          [context hash? (hash)])
          string?]{
 This handler can be used to raise @racket[exn:fail] for any missing context key.}

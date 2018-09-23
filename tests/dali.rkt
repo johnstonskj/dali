@@ -7,7 +7,8 @@
 
 ;; ---------- Requirements
 
-(require rackunit
+(require racket/file
+         rackunit
          ; ---------
          "../main.rkt")
 
@@ -162,7 +163,14 @@
   "Hola Sr. Juan,\n    Welcome!"))
 
 
-;; tests for compile-string
+;; tests for expand-file
+
+(define (temporary-file)
+  (make-temporary-file "rackunit-tmp-~a" #f (find-system-path 'temp-dir)))
+
+;; TODO: tests expand-file
+
+;; TODO: tests for compile-string
 
 (test-case
  "compile-string: success with simple string"
@@ -208,6 +216,10 @@
    exn:fail?
    (λ ()
      (expand-string "hello {{/unsupported}} :)" (hash "name" "simon")))))
+
+;; TODO: fail to load partial
+
+;; TODO: fail on bad context structure
 
 ;; ---------- Test Cases - Unsupported
 

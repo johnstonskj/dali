@@ -38,7 +38,7 @@ The module also provides a cache for loaded and compiled *partial* to support gr
 
 ## History
 
-* *1.1* - Feature Stable Release
+* **1.1** - Feature Stable Release
   * Completed documentation, using Mustache flow and examples.
   * Refactored the compiled code for sections, it's now much faster and cleaner.
   * Updated escaping to match the Mustache spec.

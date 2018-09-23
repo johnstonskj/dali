@@ -27,16 +27,22 @@
    (-> string? boolean?)]
   
   [blank-missing-value-handler
-   (-> string? string?)]
+   (->* (string?) (hash?) string?)]
     
   [error-missing-value-handler
-   (-> string? string?)])
+   (->* (string?) (hash?) string?)]
 
- partial-path
+  [partial-path
+   (->* () (string?) (or/c void? string?))]
 
- partial-cache
+  [partial-cache
+   (->* () ((hash/c string? list?)) (or/c void? (hash/c string? list?)))]
 
- partial-extension)
+  [partial-extension
+   (->* () (string?) (or/c void? string?))]
+
+  [escape-replacements
+   (->* () ((listof pair?)) (or/c void? (listof pair?)))]))
 
 ;; ---------- Requirements
 
@@ -54,7 +60,7 @@
 ;; This has to be at the top-level of the module.
 (define-namespace-anchor anchor)
 
-(define partial-path (make-parameter '(".")))
+(define partial-path (make-parameter "."))
 
 (define partial-cache (make-parameter (hash)))
 
@@ -69,11 +75,15 @@
 
 ;; ---------- Implementation
 
-(define (blank-missing-value-handler name) "")
+(define (blank-missing-value-handler name [context (hash)]) "")
 
 
-(define (error-missing-value-handler name)
+(define (error-missing-value-handler name [context (hash)])
   (error "No context key ~a found" name))
+
+
+;; TODO: support helpers and literals from Handlebars?
+;; TODO: support HTML-escape override?
 
 
 (define (expand-file source target context [missing-value-handler blank-missing-value-handler])
@@ -233,8 +243,10 @@
                   [else
                    (error (format "fetch-partial error, unexpected response: ~s" partial))])]
                [(string-prefix? value ".")
+                ;; TODO: support relative paths
                 (error "unsupported: relative paths")]
                [(string-between? value "=" "=")
+                ;; TODO: support set-delimiter
                 (error "unsupported: setting delimiters")]
                [else
                 ;; just a simple value reference
@@ -273,6 +285,7 @@
                 (nested item-context)]
                [(and (procedure? item-context)
                      (= (procedure-arity item-context) 1))
+                ;; TODO: process section lambdas differently
                 (item-context key)]
                [(or (symbol? item-context)
                     (char? item-context)
@@ -286,6 +299,7 @@
            (nested new-context)]
           [(and (procedure? new-context)
                 (= (procedure-arity new-context) 1))
+           ;; TODO: process section lambdas differently
            (new-context key)]
           [(or (symbol? new-context)
                (char? new-context)
@@ -347,9 +361,14 @@
       [(and (> (length names) 1) (hash? value))
        (nested value (rest names))]
       [(and (= (length names) 1) (procedure? value))
-       (if (= (procedure-arity value) 1)
-           (value (first names))
-           (value))]
+       (define arity (procedure-arity value))
+       (cond
+         [(= arity 1)
+          (value (first names))]
+         [(or (= arity 2) (and (list? arity) (equal? arity '(1 2))))
+          (value (first names) context)]
+         [else
+          (error "lambda has incorrect arity")])]
       [(= (length names) 1)
        value]
       [else (missing-value-handler key)])))
