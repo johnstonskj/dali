@@ -1,6 +1,7 @@
 #lang scribble/manual
 
-@(require racket/sandbox
+@(require racket/file
+          racket/sandbox
           scribble/core
           scribble/examples
           dali
@@ -679,3 +680,7 @@ blank string (@racket[""]) for any missing context key.}
           [context hash? (hash)])
          string?]{
 This handler can be used to raise @racket[exn:fail] for any missing context key.}
+
+@section{License}
+
+@verbatim|{|@file->string["LICENSE"]}|
